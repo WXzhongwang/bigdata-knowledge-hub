@@ -711,5 +711,20 @@
   "reviewCount": 0,
   "lastReview": "",
   "nextReview": "2026-09-12"
+ },
+ {
+  "id": "spark-structured-streaming",
+  "name": "Spark Structured Streaming 流处理",
+  "stack": "Spark",
+  "types": [
+   "原理",
+   "使用方法",
+   "核心代码"
+  ],
+  "level": "待学习",
+  "content": "## 核心原理\n\n**一句话**：把流看作一张无界表，每来一批数据就是表上追加一行，查询会持续输出结果——「无界表」模型。\n\n- **微批（Micro-Batch）**：默认模式，把流按 trigger 间隔切分成小批，复用 Spark SQL 引擎，延迟约 100ms\n- **连续处理（Continuous）**：实验性，延迟低至 1ms（At-Least-Once），基于 Event-Time 的操作不支持\n- **输出模式**：Append（只输出新增）/ Update（输出变更行）/ Complete（全表输出）\n- **Exactly-Once 语义**：靠 WAL 日志 + 幂等 Sink（Kafka 事务 / 文件提交原子性）保证，故障恢复从 checkpoint 恢复 offset\n\n## 使用方法\n\n```python\nfrom pyspark.sql import SparkSession\nfrom pyspark.sql.functions import window, col\n\nspark = SparkSession.builder.appName(\"stream\").getOrCreate()\n\ndf = spark.readStream.format(\"kafka\") \\\n    .option(\"kafka.bootstrap.servers\", \"k1:9092\") \\\n    .option(\"subscribe\", \"orders\").load()\n\n# 解析 JSON + 5 分钟窗口聚合\nvalue = df.selectExpr(\"CAST(value AS STRING) as json\") \\\n    .selectExpr(\"json_tuple(json, 'ts', 'amount') as (ts, amount)\") \\\n    .select(col(\"ts\").cast(\"timestamp\").alias(\"ts\"),\n            col(\"amount\").cast(\"double\").alias(\"amount\"))\n\nagg = value.groupBy(window(\"ts\", \"5 minutes\")).sum(\"amount\")\n\nq = agg.writeStream \\\n    .outputMode(\"update\") \\\n    .format(\"console\") \\\n    .option(\"checkpointLocation\", \"/ckpt/orders\") \\\n    .trigger(processingTime=\"1 minute\") \\\n    .start()\n\nq.awaitTermination()\n```\n\n## 面试高频题\n\n**Q1: Structured Streaming 与 Flink 的区别？**\n- 模型：微批为主 vs 纯事件驱动真流；延迟：100ms vs 毫秒级\n- SS 与 Spark SQL/API 深度复用、SQL 支持完善、生态一致性好；Flink 状态管理、Event-Time、CEP 更强\n- 选型：已有离线 Spark 平台、延迟要求秒级 → SS；毫秒级延迟 / 大状态 / CEP → Flink\n\n**Q2: 如何保证 Exactly-Once？**\n- 可重放源（Kafka）+ checkpoint 记录 offset + 事务/幂等 Sink，三者缺一不可\n\n**Q3: Watermark 怎么用？**\n`.withWatermark(\"ts\", \"10 minutes\")`，迟到超过 10 分钟的数据被丢弃，同时触发状态清理，防止状态无限膨胀。\n\n## 一句话口诀\n\n> 流是一张无限追加的表，trigger 决定批次，checkpoint 保 Exactly-Once。",
+  "reviewCount": 0,
+  "lastReview": "",
+  "nextReview": "2026-08-28"
  }
 ]
