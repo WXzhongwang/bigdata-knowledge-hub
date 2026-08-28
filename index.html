@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>大数据知识巩固台</title>
+<!-- 静态站点版：数据来自同目录 data.json（GitHub 仓库维护），复习进度保存在浏览器本地 -->
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  :root {
+    --primary: #2563eb; --primary-soft: #eff6ff; --accent: #0ea5e9;
+    --bg: #f5f7fb; --card: #ffffff; --text: #0f172a; --text2: #64748b; --text3: #94a3b8;
+    --line: #e8edf4; --red: #ef4444; --red-soft: #fef2f2; --green: #10b981; --green-soft: #ecfdf5;
+    --amber: #f59e0b; --amber-soft: #fffbeb; --violet: #8b5cf6; --radius: 14px;
+    --shadow: 0 1px 3px rgba(15,23,42,.06), 0 4px 16px rgba(15,23,42,.05);
+  }
+  html, body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.6; }
+  body { padding-bottom: 76px; }
+  button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+  input, select, textarea { font-family: inherit; font-size: 16px; color: var(--text); }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 14px; }
+  .hidden { display: none !important; }
+
+  /* ===== Header ===== */
+  header { background: linear-gradient(135deg, #1d4ed8, #0ea5e9); color: #fff; }
+  .hd-inner { display: flex; align-items: center; gap: 12px; padding: 18px 14px; max-width: 1080px; margin: 0 auto; flex-wrap: wrap; }
+  .hd-logo { width: 40px; height: 40px; border-radius: 11px; background: rgba(255,255,255,.16); display: flex; align-items: center; justify-content: center; flex: none; }
+  .hd-title { font-size: 18px; font-weight: 700; letter-spacing: .3px; }
+  .hd-sub { font-size: 12px; opacity: .82; margin-top: 1px; }
+  .hd-right { margin-left: auto; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .sync-pill { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,.16); border-radius: 999px; padding: 5px 12px; font-size: 12px; }
+  .sync-dot { width: 8px; height: 8px; border-radius: 50%; background: #fbbf24; flex: none; }
+  .sync-dot.ok { background: #4ade80; }
+  .sync-dot.off { background: #f87171; }
+  .hd-btn { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,.16); border-radius: 10px; padding: 7px 12px; font-size: 13px; color: #fff; transition: background .15s; }
+  .hd-btn:hover { background: rgba(255,255,255,.26); }
+  .hd-btn svg { width: 15px; height: 15px; }
+
+  /* ===== 备份提示 ===== */
+  .backup-tip { max-width: 1080px; margin: 12px auto 0; padding: 10px 14px; background: var(--amber-soft); border: 1px solid #fde68a; border-radius: 12px; color: #92400e; font-size: 13px; display: flex; align-items: center; gap: 8px; }
+  .backup-tip svg { width: 16px; height: 16px; flex: none; }
+  .backup-tip b { font-weight: 600; }
+
+  /* ===== 今日复习 ===== */
+  .today-card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); margin-top: 14px; overflow: hidden; }
+  .today-head { display: flex; align-items: center; gap: 10px; padding: 14px 16px; border-bottom: 1px solid var(--line); cursor: pointer; }
+  .today-head h2 { font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+  .today-head h2 svg { width: 18px; height: 18px; color: var(--primary); }
+  .today-stats { margin-left: auto; display: flex; gap: 6px; }
+  .stat-chip { font-size: 12px; padding: 3px 10px; border-radius: 999px; background: var(--bg); color: var(--text2); }
+  .stat-chip.due { background: var(--red-soft); color: var(--red); font-weight: 600; }
+  .stat-chip.today { background: var(--primary-soft); color: var(--primary); font-weight: 600; }
+  .today-body { padding: 8px 16px 14px; }
+  .t-item { display: flex; align-items: center; gap: 10px; padding: 11px 4px; border-bottom: 1px dashed var(--line); }
+  .t-item:last-child { border-bottom: none; }
+  .t-badge { flex: none; width: 8px; height: 8px; border-radius: 50%; }
+  .t-badge.over { background: var(--red); }
+  .t-badge.tdy { background: var(--primary); }
+  .t-badge.soon { background: var(--amber); }
+  .t-info { flex: 1; min-width: 0; }
+  .t-name { font-size: 14px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .t-name.overdue { color: var(--red); }
+  .t-meta { font-size: 12px; color: var(--text2); margin-top: 2px; }
+  .t-meta b.overdue { color: var(--red); }
+  .t-act { flex: none; }
+  .btn-done { display: inline-flex; align-items: center; gap: 5px; background: var(--primary); color: #fff; font-size: 13px; font-weight: 600; padding: 8px 14px; border-radius: 10px; min-height: 40px; transition: opacity .15s; }
+  .btn-done:hover { opacity: .88; }
+  .btn-done svg { width: 14px; height: 14px; }
+  .btn-done.overdue { background: var(--red); }
+  .today-empty { text-align: center; padding: 22px 10px; color: var(--text3); font-size: 13px; }
+
+  /* ===== Tab ===== */
+  .tabs { max-width: 1080px; margin: 16px auto 0; display: flex; gap: 4px; background: var(--card); border-radius: var(--radius); padding: 5px; box-shadow: var(--shadow); }
+  .tab { flex: 1; display: flex; align-items: center; justify-content: center; gap: 7px; padding: 11px 6px; border-radius: 10px; font-size: 14px; font-weight: 600; color: var(--text2); min-height: 44px; transition: all .15s; }
+  .tab svg { width: 16px; height: 16px; }
+  .tab.on { background: var(--primary); color: #fff; box-shadow: 0 2px 8px rgba(37,99,235,.35); }
+  .tab .tab-count { font-size: 11px; background: rgba(0,0,0,.08); border-radius: 999px; padding: 1px 7px; }
+  .tab.on .tab-count { background: rgba(255,255,255,.25); }
+
+  /* ===== 筛选区 ===== */
+  .filter-bar { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0; align-items: center; }
+  .search-box { position: relative; flex: 1; min-width: 200px; }
+  .search-box svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 15px; height: 15px; color: var(--text3); }
+  .search-box input { width: 100%; border: 1px solid var(--line); background: var(--card); border-radius: 10px; padding: 11px 12px 11px 36px; min-height: 44px; box-shadow: var(--shadow); }
+  .chip { border: 1px solid var(--line); background: var(--card); color: var(--text2); border-radius: 999px; padding: 7px 14px; font-size: 13px; min-height: 36px; transition: all .15s; }
+  .chip.on { background: var(--primary); border-color: var(--primary); color: #fff; }
+
+  /* ===== 知识卡片网格 ===== */
+  .k-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+  .k-card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 14px 14px 12px; cursor: pointer; transition: transform .12s, box-shadow .12s; border: 1px solid transparent; position: relative; }
+  .k-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(15,23,42,.09); }
+  .k-card.overdue { border-color: #fecaca; }
+  .k-top { display: flex; align-items: center; gap: 8px; }
+  .k-stack { font-size: 11px; font-weight: 700; color: var(--primary); background: var(--primary-soft); padding: 3px 9px; border-radius: 999px; flex: none; }
+  .k-ov { font-size: 11px; font-weight: 700; color: var(--red); background: var(--red-soft); padding: 3px 9px; border-radius: 999px; flex: none; }
+  .k-name { font-size: 15px; font-weight: 700; margin: 9px 0 6px; line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .k-types { display: flex; flex-wrap: wrap; gap: 5px; }
+  .k-type { font-size: 11px; color: var(--text2); background: var(--bg); padding: 2px 8px; border-radius: 6px; }
+  .k-foot { display: flex; align-items: center; gap: 6px; margin-top: 10px; padding-top: 9px; border-top: 1px solid var(--line); font-size: 12px; color: var(--text2); }
+  .k-foot svg { width: 13px; height: 13px; color: var(--text3); }
+  .k-foot .grow { flex: 1; }
+  .k-level { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 600; padding: 3px 9px; border-radius: 999px; }
+  .k-level.l0 { background: var(--bg); color: var(--text2); }
+  .k-level.l1 { background: var(--amber-soft); color: #b45309; }
+  .k-level.l2 { background: var(--green-soft); color: var(--green); }
+  .k-next.due { color: var(--red); font-weight: 600; }
+
+  .empty-state { text-align: center; padding: 48px 16px; color: var(--text3); }
+  .empty-state svg { width: 44px; height: 44px; opacity: .4; margin-bottom: 10px; }
+
+  /* ===== 面试题列表 ===== */
+  .iq-list { display: flex; flex-direction: column; gap: 10px; }
+  .iq-item { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+  .iq-head { display: flex; align-items: center; gap: 10px; padding: 13px 14px; cursor: pointer; }
+  .iq-idx { flex: none; width: 26px; height: 26px; border-radius: 8px; background: var(--primary-soft); color: var(--primary); font-size: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+  .iq-q { flex: 1; font-size: 14px; font-weight: 600; line-height: 1.5; }
+  .iq-stack { font-size: 11px; color: var(--text2); background: var(--bg); padding: 2px 8px; border-radius: 6px; flex: none; }
+  .iq-chev { flex: none; color: var(--text3); transition: transform .2s; }
+  .iq-chev svg { width: 16px; height: 16px; display: block; }
+  .iq-item.open .iq-chev { transform: rotate(180deg); }
+  .iq-body { display: none; border-top: 1px dashed var(--line); padding: 12px 14px 14px; }
+  .iq-item.open .iq-body { display: block; }
+  .iq-actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+
+  /* ===== 统计 ===== */
+  .stats-wrap { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 14px; }
+  .stat-card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 14px; }
+  .stat-num { font-size: 26px; font-weight: 800; line-height: 1.2; }
+  .stat-num small { font-size: 13px; font-weight: 600; color: var(--text3); }
+  .stat-label { font-size: 12px; color: var(--text2); margin-top: 3px; display: flex; align-items: center; gap: 5px; }
+  .stat-label svg { width: 13px; height: 13px; color: var(--text3); }
+  .stat-card.blue .stat-num { color: var(--primary); }
+  .stat-card.green .stat-num { color: var(--green); }
+  .stat-card.red .stat-num { color: var(--red); }
+  .stat-card.violet .stat-num { color: var(--violet); }
+  .chart-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .chart-card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px; }
+  .chart-card h3 { font-size: 14px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 7px; }
+  .chart-card h3 svg { width: 15px; height: 15px; color: var(--primary); }
+  .ring-wrap { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+  .legend { flex: 1; min-width: 120px; display: flex; flex-direction: column; gap: 8px; }
+  .legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text2); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 3px; flex: none; }
+  .legend-item b { margin-left: auto; color: var(--text); font-weight: 700; }
+  .bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+  .bar-label { width: 86px; flex: none; font-size: 12px; color: var(--text2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: right; }
+  .bar-track { flex: 1; height: 18px; background: var(--bg); border-radius: 9px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 9px; min-width: 2px; }
+  .bar-val { width: 34px; flex: none; font-size: 12px; font-weight: 700; color: var(--text); text-align: right; }
+
+  /* ===== 弹窗 ===== */
+  .mask { position: fixed; inset: 0; background: rgba(15,23,42,.45); z-index: 60; display: flex; align-items: flex-end; justify-content: center; }
+  .mask.center { align-items: center; padding: 16px; }
+  .modal { background: var(--card); width: 100%; max-width: 560px; max-height: 88vh; overflow-y: auto; border-radius: 18px 18px 0 0; animation: slideUp .22s ease; }
+  .mask.center .modal { border-radius: 18px; max-height: 82vh; animation: pop .18s ease; }
+  @keyframes slideUp { from { transform: translateY(40px); opacity: .6; } to { transform: none; opacity: 1; } }
+  @keyframes pop { from { transform: scale(.95); opacity: .6; } to { transform: none; opacity: 1; } }
+  .modal-head { display: flex; align-items: center; gap: 10px; padding: 16px 18px 12px; }
+  .modal-head h3 { font-size: 16px; font-weight: 700; flex: 1; }
+  .m-close { width: 34px; height: 34px; border-radius: 10px; background: var(--bg); display: flex; align-items: center; justify-content: center; color: var(--text2); }
+  .m-close svg { width: 16px; height: 16px; }
+  .modal-body { padding: 0 18px 18px; }
+  .form-row { margin-bottom: 12px; }
+  .form-row label { display: block; font-size: 13px; font-weight: 600; color: var(--text2); margin-bottom: 6px; }
+  .form-row label i { color: var(--red); font-style: normal; }
+  .form-row input[type="text"], .form-row select, .form-row textarea, .form-row input[type="date"] {
+    width: 100%; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; background: #fff; min-height: 44px;
+  }
+  .form-row textarea { min-height: 140px; resize: vertical; line-height: 1.55; }
+  .form-hint { font-size: 12px; color: var(--text3); margin-top: 4px; }
+  .chk-group { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chk-item { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); border-radius: 999px; padding: 7px 13px; font-size: 13px; color: var(--text2); cursor: pointer; min-height: 40px; user-select: none; }
+  .chk-item.on { background: var(--primary-soft); border-color: var(--primary); color: var(--primary); font-weight: 600; }
+  .chk-item input { display: none; }
+  .btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: var(--primary); color: #fff; font-size: 14px; font-weight: 700; border-radius: 10px; padding: 11px 18px; min-height: 44px; width: 100%; }
+  .btn-primary:disabled { opacity: .6; cursor: not-allowed; }
+  .btn-ghost { display: inline-flex; align-items: center; justify-content: center; gap: 6px; border: 1px solid var(--line); background: var(--card); color: var(--text2); font-size: 13px; font-weight: 600; border-radius: 10px; padding: 9px 14px; min-height: 40px; }
+  .btn-danger { display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: var(--red); color: #fff; font-size: 13px; font-weight: 700; border-radius: 10px; padding: 9px 14px; min-height: 40px; }
+  .btn-dialog { display: inline-flex; align-items: center; justify-content: center; background: var(--primary); color: #fff; font-size: 14px; font-weight: 700; border-radius: 10px; padding: 11px 22px; min-height: 44px; flex: 1; }
+  .btn-dialog.gray { background: var(--bg); color: var(--text2); }
+  .btn-dialog.red { background: var(--red); }
+
+  /* ===== 详情 ===== */
+  .detail-stack { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+  .detail-markdown { font-size: 14px; line-height: 1.75; color: #1e293b; }
+  .detail-markdown h3, .detail-markdown h4 { margin: 12px 0 6px; font-weight: 700; color: var(--text); }
+  .detail-markdown h3 { font-size: 15px; }
+  .detail-markdown h4 { font-size: 14px; }
+  .detail-markdown p { margin: 6px 0; }
+  .detail-markdown ul { margin: 6px 0 6px 20px; }
+  .detail-markdown li { margin: 3px 0; }
+  .detail-markdown pre { background: #0f172a; color: #e2e8f0; border-radius: 10px; padding: 12px 14px; overflow-x: auto; font-size: 12.5px; line-height: 1.6; margin: 8px 0; font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; white-space: pre; }
+  .detail-markdown code { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; }
+  .detail-markdown strong { font-weight: 700; color: var(--text); }
+  .detail-actions { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+
+  /* ===== FAB / 底部栏 ===== */
+  .fab { position: fixed; right: 16px; bottom: 84px; width: 52px; height: 52px; border-radius: 50%; background: var(--primary); color: #fff; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 20px rgba(37,99,235,.4); z-index: 50; transition: transform .15s; }
+  .fab:active { transform: scale(.92); }
+  .fab svg { width: 22px; height: 22px; }
+  .bottom-nav { position: fixed; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,.96); backdrop-filter: blur(10px); border-top: 1px solid var(--line); display: flex; z-index: 55; padding-bottom: env(safe-area-inset-bottom); }
+  .bn-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; padding: 9px 4px 7px; font-size: 11px; color: var(--text3); min-height: 56px; }
+  .bn-item svg { width: 20px; height: 20px; }
+  .bn-item.on { color: var(--primary); font-weight: 700; }
+
+  /* ===== Toast ===== */
+  .toast { position: fixed; left: 50%; bottom: 92px; transform: translateX(-50%) translateY(10px); background: rgba(15,23,42,.9); color: #fff; font-size: 13px; padding: 10px 18px; border-radius: 999px; z-index: 99; opacity: 0; transition: all .25s; pointer-events: none; max-width: 86vw; text-align: center; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ===== 响应式 ===== */
+  @media (max-width: 767px) {
+    body { padding-bottom: 88px; }
+    .chart-grid { grid-template-columns: 1fr; }
+    .tabs { display: none; }
+    .hd-sub { display: none; }
+    .hd-btn span.t { display: none; }
+    .hd-btn { padding: 8px; }
+    .k-grid { grid-template-columns: 1fr; }
+    .modal { max-width: 100%; }
+  }
+  @media (min-width: 768px) {
+    .bottom-nav { display: none; }
+    .mask { align-items: center; padding: 16px; }
+    .modal { border-radius: 18px; max-height: 84vh; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hd-inner">
+    <div class="hd-logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22">
+        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+      </svg>
+    </div>
+    <div>
+      <div class="hd-title">大数据知识巩固台</div>
+      <div class="hd-sub">技术栈 · 原理 · 面试题 · 架构方案 · 核心代码</div>
+    </div>
+    <div class="hd-right">
+      <span class="sync-pill"><span class="sync-dot" id="syncDot"></span><span id="syncText">加载中</span></span>
+      <button class="hd-btn" onclick="exportJSON()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        <span class="t">导出备份</span>
+      </button>
+      <button class="hd-btn" onclick="document.getElementById('importFile').click()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+        <span class="t">导入恢复</span>
+      </button>
+      <input type="file" id="importFile" accept=".json,application/json" class="hidden" onchange="importJSON(this)">
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div id="backupTip" class="backup-tip hidden">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+    <span>知识库已积累 <b id="backupCount">30</b> 条，且复习进度仅保存在本机浏览器，建议点击右上角「导出备份」保存 JSON 快照。</span>
+  </div>
+
+  <!-- 今天要处理 -->
+  <div class="today-card">
+    <div class="today-head" onclick="toggleToday()">
+      <h2>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+        今天要处理
+      </h2>
+      <div class="today-stats">
+        <span class="stat-chip due" id="statDue">逾期 0</span>
+        <span class="stat-chip today" id="statToday">今日 0</span>
+        <span class="stat-chip" id="statSoon">近3天 0</span>
+      </div>
+    </div>
+    <div class="today-body" id="todayBody"></div>
+  </div>
+
+  <!-- Tab -->
+  <div class="tabs">
+    <button class="tab on" data-tab="library" onclick="switchTab('library')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+      知识卡片库<span class="tab-count" id="cntAll">0</span>
+    </button>
+    <button class="tab" data-tab="interview" onclick="switchTab('interview')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+      面试题专项<span class="tab-count" id="cntIq">0</span>
+    </button>
+    <button class="tab" data-tab="stats" onclick="switchTab('stats')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+      学习统计
+    </button>
+  </div>
+
+  <!-- 知识卡片库 -->
+  <section id="tab-library">
+    <div class="filter-bar">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <input type="text" id="searchInput" placeholder="搜索知识点（如：Kafka、Shuffle、Checkpoint）" oninput="onSearch()">
+      </div>
+      <button class="btn-ghost" onclick="openClearModal()" style="min-height:44px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+        清空本地进度
+      </button>
+    </div>
+    <div class="filter-bar">
+      <button class="chip on" data-stack="" onclick="setStackFilter('')">全部</button>
+      <span id="stackChips"></span>
+    </div>
+    <div class="filter-bar">
+      <button class="chip on" data-type="" onclick="setTypeFilter('')">全部类型</button>
+      <span id="typeChips"></span>
+    </div>
+    <div class="k-grid" id="libraryGrid"></div>
+    <div id="libraryEmpty"></div>
+  </section>
+
+  <!-- 面试题专项 -->
+  <section id="tab-interview" class="hidden">
+    <div class="iq-list" id="iqList"></div>
+    <div id="iqEmpty"></div>
+  </section>
+
+  <!-- 学习统计 -->
+  <section id="tab-stats" class="hidden">
+    <div class="stats-wrap">
+      <div class="stat-card blue"><div class="stat-num" id="stTotal">0</div><div class="stat-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>知识卡片总数</div></div>
+      <div class="stat-card green"><div class="stat-num" id="stMastered">0</div><div class="stat-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>已掌握</div></div>
+      <div class="stat-card red"><div class="stat-num" id="stDue">0</div><div class="stat-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>待复习（逾期+今日）</div></div>
+      <div class="stat-card violet"><div class="stat-num" id="stReviews">0</div><div class="stat-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"></path></svg>累计复习次数</div></div>
+    </div>
+    <div class="chart-grid">
+      <div class="chart-card">
+        <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>掌握度分布</h3>
+        <div class="ring-wrap">
+          <svg id="ringSvg" viewBox="0 0 140 140" width="150" height="150" role="img" aria-label="掌握度分布环形图"></svg>
+          <div class="legend" id="levelLegend"></div>
+        </div>
+      </div>
+      <div class="chart-card">
+        <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>技术栈分布（Top 8）</h3>
+        <div id="stackBars"></div>
+      </div>
+      <div class="chart-card" style="grid-column: 1 / -1;">
+        <h3><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>知识类型分布</h3>
+        <div id="typeBars"></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- 底部移动端导航 -->
+<nav class="bottom-nav">
+  <button class="bn-item on" data-tab="library" onclick="switchTab('library')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+    卡片库
+  </button>
+  <button class="bn-item" data-tab="interview" onclick="switchTab('interview')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+    面试题
+  </button>
+  <button class="bn-item" data-tab="stats" onclick="switchTab('stats')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+    统计
+  </button>
+</nav>
+
+<button class="fab" onclick="openForm()" aria-label="新增知识卡片">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+</button>
+
+<!-- 表单弹窗 -->
+<div class="mask hidden" id="formMask" onclick="if(event.target===this)closeForm()">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="formTitle">新增知识卡片</h3>
+      <button class="m-close" onclick="closeForm()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <label>知识点名称 <i>*</i></label>
+        <input type="text" name="名称" placeholder="如：Flink Checkpoint 原理与调优">
+      </div>
+      <div class="form-row">
+        <label>技术栈 <i>*</i></label>
+        <select name="技术栈"><option value="">请选择技术栈</option></select>
+      </div>
+      <div class="form-row">
+        <label>知识类型（可多选）<i>*</i></label>
+        <div class="chk-group" id="typeGroup"></div>
+      </div>
+      <div class="form-row">
+        <label>掌握度</label>
+        <select name="掌握度"><option value="">请选择</option></select>
+      </div>
+      <div class="form-row">
+        <label>下次复习日期</label>
+        <input type="date" name="下次复习">
+        <div class="form-hint">留空则默认按艾宾浩斯间隔自动安排（1/3/7/15/30 天）。</div>
+      </div>
+      <div class="form-row">
+        <label>详细内容</label>
+        <textarea name="详细内容" placeholder="支持 Markdown 片段：&#10;### 原理&#10;- 关键点列表&#10;- 使用方法&#10;&#10;### 核心代码&#10;```sql&#10;SELECT ...&#10;```&#10;&#10;### 面试题&#10;Q：...&#10;A：..."></textarea>
+        <div class="form-hint">本地新增的卡片仅保存在浏览器；如需沉淀进知识库，请提交到 GitHub 仓库 data.json。</div>
+      </div>
+      <button class="btn-primary" id="formSubmitBtn" onclick="submitForm()">保存知识卡片</button>
+    </div>
+  </div>
+</div>
+
+<!-- 详情弹窗 -->
+<div class="mask center hidden" id="detailMask" onclick="if(event.target===this)closeDetail()">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="detailTitle">知识详情</h3>
+      <button class="m-close" onclick="closeDetail()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="detail-stack" id="detailMeta"></div>
+      <div class="detail-markdown" id="detailContent"></div>
+      <div class="detail-actions" id="detailActions"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 确认弹窗 -->
+<div class="mask center hidden" id="confirmMask" onclick="if(event.target===this)closeConfirm()">
+  <div class="modal" style="max-width:380px">
+    <div class="modal-head"><h3 id="confirmTitle">确认操作</h3></div>
+    <div class="modal-body">
+      <p id="confirmText" style="font-size:14px;color:var(--text2);margin-bottom:16px"></p>
+      <div style="display:flex;gap:10px">
+        <button class="btn-dialog gray" onclick="closeConfirm()">取消</button>
+        <button class="btn-dialog red" id="confirmOkBtn" onclick="confirmAction()">确定</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function () {
+  var STACKS = ['Hadoop', 'Spark', 'Flink', 'Kafka', 'Hive', 'HBase', 'ClickHouse', 'Doris', '数据湖', '数仓与调度', '其他'];
+  var TYPES = ['原理', '使用方法', '面试题', '架构方案', '核心代码'];
+  var LEVELS = ['待学习', '学习中', '已掌握'];
+  var INTERVALS = [1, 3, 7, 15, 30]; // 艾宾浩斯复习间隔（天）
+  var LS_PROGRESS = 'bdh_progress_v1';   // 对云端卡片的本地覆盖（复习进度/编辑）
+  var LS_CUSTOM = 'bdh_custom_v1';       // 本地新增卡片
+  var LS_DELETED = 'bdh_deleted_v1';     // 本地删除的云端卡片 id
+  var LS_FORM = 'bdh_form_v1';           // 表单草稿
+  var LS_DATA_CACHE = 'bdh_data_cache_v1'; // data.json 离线缓存
+  var STATE = { rows: [], baseLoaded: false, stackFilter: '', typeFilter: '', keyword: '', editingId: '', todayOpen: true, tab: 'library' };
+  var CONFIRM_CB = null;
+
+  /* ---------- 工具 ---------- */
+  function pad(n) { return n < 10 ? '0' + n : '' + n; }
+  function todayStr() { var d = new Date(); return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+  function addDays(dateStr, n) {
+    var p = dateStr.split('-'); var d = new Date(+p[0], +p[1] - 1, +p[2]); d.setDate(d.getDate() + n);
+    return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+  }
+  function daysUntil(dateStr) {
+    if (!dateStr) return 9999;
+    var p = dateStr.split('-'); var d = new Date(+p[0], +p[1] - 1, +p[2]);
+    var t = new Date(); t.setHours(0, 0, 0, 0);
+    return Math.round((d - t) / 86400000);
+  }
+  function esc(s) {
+    if (s === null || s === undefined) return '';
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+  function $(id) { return document.getElementById(id); }
+  function toast(msg) {
+    var t = $('toast'); t.textContent = msg; t.classList.add('show');
+    clearTimeout(t._tm); t._tm = setTimeout(function () { t.classList.remove('show'); }, 2400);
+  }
+  function fmtDate(s) { if (!s) return '未安排'; var p = s.slice(0, 10).split('-'); return (+p[1]) + '月' + (+p[2]) + '日'; }
+  function hasType(row, text) { var arr = row['知识类型'] || []; for (var i = 0; i < arr.length; i++) { if (arr[i] === text) return true; } return false; }
+  function levelClass(level) {
+    if (level === '已掌握') return 'l2';
+    if (level === '学习中') return 'l1';
+    return 'l0';
+  }
+
+  /* ---------- 本地存储 ---------- */
+  function lsGet(key, fallback) {
+    try { var raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; } catch (e) { return fallback; }
+  }
+  function lsSet(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) {} }
+  function lsDel(key) { try { localStorage.removeItem(key); } catch (e) {} }
+  function getProgress() { return lsGet(LS_PROGRESS, {}); }
+  function getCustom() { return lsGet(LS_CUSTOM, []); }
+  function getDeleted() { return lsGet(LS_DELETED, []); }
+
+  /* ---------- 加载数据 ---------- */
+  function init() {
+    renderSelectOptions();
+    loadData();
+  }
+
+  function loadData() {
+    setSync(null);
+    var cacheBust = todayStr().replace(/-/g, '');
+    fetch('data.json?t=' + cacheBust, { cache: 'no-cache' }).then(function (res) {
+      if (!res.ok) throw new Error('http ' + res.status);
+      return res.json();
+    }).then(function (list) {
+      lsSet(LS_DATA_CACHE, list);
+      STATE.rows = buildRows(list);
+      STATE.baseLoaded = true;
+      renderAll();
+      setSync(true, STATE.rows.length);
+    }).catch(function () {
+      var cached = lsGet(LS_DATA_CACHE, null);
+      if (cached && cached.length) {
+        STATE.rows = buildRows(cached);
+        STATE.baseLoaded = true;
+        renderAll();
+        setSync(false);
+        toast('云端数据加载失败，已使用本机缓存');
+      } else {
+        STATE.rows = buildRows([]);
+        renderAll();
+        setSync(false);
+        toast('数据加载失败，请刷新重试');
+      }
+    });
+  }
+
+  /* 云端基础卡片 + 本地覆盖/新增 → 有效行 */
+  function buildRows(baseList) {
+    var prog = getProgress();
+    var deleted = getDeleted();
+    var rows = [];
+    (baseList || []).forEach(function (c) {
+      if (deleted.indexOf(c.id) >= 0) return;
+      var row = {
+        _id: c.id, _base: true,
+        '名称': c.name || '未命名',
+        '技术栈': c.stack || '其他',
+        '知识类型': c.types || [],
+        '掌握度': c.level || '待学习',
+        '详细内容': c.content || '',
+        '复习次数': c.reviewCount || 0,
+        '上次复习': c.lastReview || '',
+        '下次复习': c.nextReview || ''
+      };
+      var ov = prog[c.id];
+      if (ov) { for (var k in ov) { if (ov[k] !== undefined && ov[k] !== null && ov[k] !== '') row[k] = ov[k]; } }
+      rows.push(row);
+    });
+    getCustom().forEach(function (c) {
+      rows.push({
+        _id: c.id, _base: false,
+        '名称': c.name, '技术栈': c.stack, '知识类型': c.types || [],
+        '掌握度': c.level || '待学习', '详细内容': c.content || '',
+        '复习次数': c.reviewCount || 0, '上次复习': c.lastReview || '', '下次复习': c.nextReview || ''
+      });
+    });
+    return rows;
+  }
+
+  /* ---------- 表单选项 ---------- */
+  function renderSelectOptions() {
+    var stackSel = $('formMask').querySelector('[name="技术栈"]');
+    var levelSel = $('formMask').querySelector('[name="掌握度"]');
+    stackSel.innerHTML = '<option value="">请选择技术栈</option>';
+    levelSel.innerHTML = '<option value="">请选择</option>';
+    for (var i = 0; i < STACKS.length; i++) {
+      var o = document.createElement('option'); o.value = STACKS[i]; o.textContent = STACKS[i]; stackSel.appendChild(o);
+    }
+    for (var j = 0; j < LEVELS.length; j++) {
+      var o2 = document.createElement('option'); o2.value = LEVELS[j]; o2.textContent = LEVELS[j]; levelSel.appendChild(o2);
+    }
+    var tg = $('typeGroup'); tg.innerHTML = '';
+    for (var k = 0; k < TYPES.length; k++) {
+      (function (t) {
+        var label = document.createElement('label'); label.className = 'chk-item';
+        var cb = document.createElement('input'); cb.type = 'checkbox'; cb.value = t;
+        cb.addEventListener('change', function () { label.classList.toggle('on', cb.checked); });
+        label.appendChild(cb); label.appendChild(document.createTextNode(t)); tg.appendChild(label);
+      })(TYPES[k]);
+    }
+    renderStackChips();
+    renderTypeChips();
+  }
+
+  function renderStackChips() {
+    var box = $('stackChips'); box.innerHTML = '';
+    for (var i = 0; i < STACKS.length; i++) {
+      (function (s) {
+        var b = document.createElement('button');
+        b.className = 'chip' + (STATE.stackFilter === s ? ' on' : '');
+        b.textContent = s;
+        b.onclick = function () { setStackFilter(STATE.stackFilter === s ? '' : s); };
+        box.appendChild(b);
+      })(STACKS[i]);
+    }
+  }
+
+  function renderTypeChips() {
+    var box = $('typeChips'); box.innerHTML = '';
+    for (var i = 0; i < TYPES.length; i++) {
+      (function (t) {
+        var b = document.createElement('button');
+        b.className = 'chip' + (STATE.typeFilter === t ? ' on' : '');
+        b.textContent = t;
+        b.onclick = function () { setTypeFilter(STATE.typeFilter === t ? '' : t); };
+        box.appendChild(b);
+      })(TYPES[i]);
+    }
+  }
+
+  function setStackFilter(s) { STATE.stackFilter = s; renderStackChips(); renderLibrary(); }
+  function setTypeFilter(t) { STATE.typeFilter = t; renderTypeChips(); renderLibrary(); }
+  function onSearch() { STATE.keyword = $('searchInput').value.trim(); renderLibrary(); }
+
+  function filteredRows() {
+    var k = STATE.keyword.toLowerCase();
+    return STATE.rows.filter(function (r) {
+      if (STATE.stackFilter && r['技术栈'] !== STATE.stackFilter) return false;
+      if (STATE.typeFilter && !hasType(r, STATE.typeFilter)) return false;
+      if (k) {
+        var hay = ((r['名称'] || '') + ' ' + (r['详细内容'] || '') + ' ' + (r['技术栈'] || '')).toLowerCase();
+        if (hay.indexOf(k) < 0) return false;
+      }
+      return true;
+    });
+  }
+
+  /* ---------- 渲染 ---------- */
+  function renderAll() {
+    renderToday();
+    renderLibrary();
+    renderInterview();
+    renderStats();
+    renderBackupTip();
+    if (STATE.tab) switchTab(STATE.tab, true);
+  }
+
+  function renderToday() {
+    var due = [], tdy = [], soon = [];
+    STATE.rows.forEach(function (r) {
+      var du = daysUntil(r['下次复习']);
+      if (du < 0) { due.push(r); } else if (du === 0) { tdy.push(r); } else if (du <= 3) { soon.push(r); }
+    });
+    $('statDue').textContent = '逾期 ' + due.length;
+    $('statToday').textContent = '今日 ' + tdy.length;
+    $('statSoon').textContent = '近3天 ' + soon.length;
+    var body = $('todayBody');
+    if (!due.length && !tdy.length && !soon.length) {
+      body.innerHTML = '<div class="today-empty">今日无待复习任务，可以预习新知识或巩固已学内容。</div>';
+      return;
+    }
+    body.innerHTML = '';
+    var groups = [{ list: due, cls: 'over', label: '逾期未复习' }, { list: tdy, cls: 'tdy', label: '今天到期' }, { list: soon, cls: 'soon', label: '近3天到期' }];
+    for (var g = 0; g < groups.length; g++) {
+      var grp = groups[g];
+      for (var i = 0; i < grp.list.length; i++) {
+        (function (r, cls, label) {
+          var du = daysUntil(r['下次复习']);
+          var div = document.createElement('div'); div.className = 't-item';
+          var badge = document.createElement('span'); badge.className = 't-badge ' + cls;
+          var info = document.createElement('div'); info.className = 't-info';
+          var name = document.createElement('div'); name.className = 't-name' + (cls === 'over' ? ' overdue' : '');
+          name.textContent = r['名称'] || '未命名';
+          var meta = document.createElement('div'); meta.className = 't-meta';
+          var metaTxt = (r['技术栈'] || '') + ' · ';
+          if (cls === 'over') { metaTxt += '逾期 ' + (-du) + ' 天'; } else if (cls === 'tdy') { metaTxt += '今天到期'; } else { metaTxt += fmtDate(r['下次复习']) + ' 到期'; }
+          metaTxt += ' · 已复习 ' + (r['复习次数'] || 0) + ' 次';
+          meta.innerHTML = metaTxt;
+          var act = document.createElement('div'); act.className = 't-act';
+          var btn = document.createElement('button');
+          btn.className = 'btn-done' + (cls === 'over' ? ' overdue' : '');
+          btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>' + (cls === 'over' ? '补复习' : '完成复习');
+          btn.onclick = function () { completeReview(r); };
+          act.appendChild(btn);
+          div.appendChild(badge); div.appendChild(info); div.appendChild(act);
+          info.appendChild(name); info.appendChild(meta);
+          body.appendChild(div);
+        })(grp.list[i], grp.cls, grp.label);
+      }
+    }
+  }
+
+  function toggleToday() {
+    var body = $('todayBody');
+    STATE.todayOpen = !STATE.todayOpen;
+    body.classList.toggle('hidden', !STATE.todayOpen);
+  }
+
+  function renderLibrary() {
+    var rows = filteredRows();
+    $('cntAll').textContent = STATE.rows.length;
+    var grid = $('libraryGrid'); grid.innerHTML = '';
+    var empty = $('libraryEmpty'); empty.innerHTML = '';
+    if (!rows.length) {
+      empty.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg><div>暂无匹配的知识卡片<br>点击右下角 + 新增，或调整筛选条件</div></div>';
+      return;
+    }
+    rows.forEach(function (r) {
+      var du = daysUntil(r['下次复习']);
+      var card = document.createElement('div');
+      card.className = 'k-card' + (du < 0 ? ' overdue' : '');
+      var stack = r['技术栈'] || '';
+      var types = r['知识类型'] || [];
+      var html = '';
+      html += '<div class="k-top">';
+      if (stack) html += '<span class="k-stack">' + esc(stack) + '</span>';
+      if (du < 0) html += '<span class="k-ov">逾期 ' + (-du) + ' 天</span>';
+      if (!r._base) html += '<span class="k-type" style="background:var(--amber-soft);color:#b45309">本地</span>';
+      html += '</div>';
+      html += '<div class="k-name">' + esc(r['名称'] || '未命名') + '</div>';
+      html += '<div class="k-types">';
+      for (var i = 0; i < types.length; i++) { html += '<span class="k-type">' + esc(types[i]) + '</span>'; }
+      html += '</div>';
+      var lv = r['掌握度'] || '待学习';
+      html += '<div class="k-foot">';
+      html += '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>';
+      html += '<span class="k-next' + (du < 0 ? ' due' : '') + '">' + (du < 0 ? '应于 ' + fmtDate(r['下次复习']) + ' 复习' : (du === 0 ? '今天复习' : fmtDate(r['下次复习']) + ' 复习')) + '</span>';
+      html += '<span class="grow"></span>';
+      html += '<span class="k-level ' + levelClass(lv) + '">' + esc(lv) + '</span>';
+      html += '</div>';
+      card.innerHTML = html;
+      card.onclick = function () { openDetail(r); };
+      grid.appendChild(card);
+    });
+  }
+
+  function renderInterview() {
+    var rows = STATE.rows.filter(function (r) { return hasType(r, '面试题'); });
+    $('cntIq').textContent = rows.length;
+    var list = $('iqList'); list.innerHTML = '';
+    var empty = $('iqEmpty'); empty.innerHTML = '';
+    if (!rows.length) {
+      empty.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg><div>暂无面试题记录<br>新增知识卡片时勾选「面试题」类型即可收录</div></div>';
+      return;
+    }
+    rows.forEach(function (r, idx) {
+      var item = document.createElement('div'); item.className = 'iq-item';
+      var head = document.createElement('div'); head.className = 'iq-head';
+      var idxEl = document.createElement('span'); idxEl.className = 'iq-idx'; idxEl.textContent = (idx + 1);
+      var q = document.createElement('div'); q.className = 'iq-q'; q.textContent = r['名称'];
+      var st = document.createElement('span'); st.className = 'iq-stack'; st.textContent = r['技术栈'] || '未分类';
+      var chev = document.createElement('span'); chev.className = 'iq-chev';
+      chev.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>';
+      head.appendChild(idxEl); head.appendChild(q); head.appendChild(st); head.appendChild(chev);
+      var body = document.createElement('div'); body.className = 'iq-body';
+      body.innerHTML = '<div class="detail-markdown">' + renderMarkdown(r['详细内容']) + '</div>';
+      var acts = document.createElement('div'); acts.className = 'iq-actions';
+      var lvBtn = document.createElement('button'); lvBtn.className = 'btn-ghost';
+      lvBtn.innerHTML = '掌握度：' + esc(r['掌握度'] || '待学习');
+      lvBtn.onclick = function () { openDetail(r); };
+      var doneBtn = document.createElement('button'); doneBtn.className = 'btn-done';
+      doneBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>完成复习';
+      doneBtn.onclick = function () { completeReview(r); };
+      acts.appendChild(lvBtn); acts.appendChild(doneBtn);
+      body.appendChild(acts);
+      head.onclick = function () { item.classList.toggle('open'); };
+      item.appendChild(head); item.appendChild(body);
+      list.appendChild(item);
+    });
+  }
+
+  /* ---------- 统计 ---------- */
+  function renderStats() {
+    var rows = STATE.rows;
+    var total = rows.length;
+    var mastered = 0, learning = 0, pending = 0, reviews = 0, dueCount = 0;
+    rows.forEach(function (r) {
+      var lv = r['掌握度'] || '待学习';
+      if (lv === '已掌握') mastered++; else if (lv === '学习中') learning++; else pending++;
+      reviews += (r['复习次数'] || 0);
+      if (daysUntil(r['下次复习']) <= 0) dueCount++;
+    });
+    $('stTotal').textContent = total;
+    $('stMastered').textContent = mastered;
+    $('stDue').textContent = dueCount;
+    $('stReviews').textContent = reviews;
+    renderRing(mastered, learning, pending);
+    renderStackBars(rows);
+    renderTypeBars(rows);
+  }
+
+  function renderRing(mastered, learning, pending) {
+    var svg = $('ringSvg');
+    var total = mastered + learning + pending;
+    var parts = [
+      { label: '待学习', v: pending, color: '#94a3b8' },
+      { label: '学习中', v: learning, color: '#f59e0b' },
+      { label: '已掌握', v: mastered, color: '#10b981' }
+    ];
+    var R = 52, C = 2 * Math.PI * R, cx = 70, cy = 70;
+    var html = '';
+    var offset = 0;
+    parts.forEach(function (p) {
+      if (p.v <= 0) return;
+      var frac = p.v / total;
+      var dash = frac * C;
+      html += '<circle cx="' + cx + '" cy="' + cy + '" r="' + R + '" fill="none" stroke="' + p.color + '" stroke-width="16" stroke-dasharray="' + dash.toFixed(2) + ' ' + C.toFixed(2) + '" stroke-dashoffset="' + (-offset).toFixed(2) + '" transform="rotate(-90 ' + cx + ' ' + cy + ')"></circle>';
+      offset += dash;
+    });
+    if (!total) {
+      html += '<circle cx="' + cx + '" cy="' + cy + '" r="' + R + '" fill="none" stroke="#e8edf4" stroke-width="16"></circle>';
+    }
+    html += '<text x="' + cx + '" y="' + (cy - 2) + '" text-anchor="middle" font-size="26" font-weight="800" fill="#0f172a">' + total + '</text>';
+    html += '<text x="' + cx + '" y="' + (cy + 20) + '" text-anchor="middle" font-size="11" fill="#94a3b8">知识卡片</text>';
+    svg.innerHTML = html;
+    var leg = $('levelLegend'); leg.innerHTML = '';
+    parts.forEach(function (p) {
+      var item = document.createElement('div'); item.className = 'legend-item';
+      var dot = document.createElement('span'); dot.className = 'legend-dot'; dot.style.background = p.color;
+      var label = document.createElement('span'); label.textContent = p.label;
+      var val = document.createElement('b'); val.textContent = p.v;
+      item.appendChild(dot); item.appendChild(label); item.appendChild(val);
+      leg.appendChild(item);
+    });
+  }
+
+  function renderStackBars(rows) {
+    var map = {};
+    STACKS.forEach(function (s) { map[s] = 0; });
+    rows.forEach(function (r) { var t = r['技术栈'] || '其他'; if (map[t] !== undefined) map[t]++; else map[t] = 1; });
+    var arr = [];
+    for (var k in map) { arr.push({ name: k, v: map[k] }); }
+    arr.sort(function (a, b) { return b.v - a.v; });
+    arr = arr.filter(function (a) { return a.v > 0; }).slice(0, 8);
+    var max = 1;
+    arr.forEach(function (a) { if (a.v > max) max = a.v; });
+    var colors = ['#2563eb', '#0ea5e9', '#8b5cf6', '#f59e0b', '#10b981', '#ef4444', '#14b8a6', '#6366f1'];
+    var box = $('stackBars'); box.innerHTML = '';
+    arr.forEach(function (a, i) {
+      var row = document.createElement('div'); row.className = 'bar-row';
+      var lab = document.createElement('span'); lab.className = 'bar-label'; lab.textContent = a.name; lab.title = a.name;
+      var track = document.createElement('span'); track.className = 'bar-track';
+      var fill = document.createElement('span'); fill.className = 'bar-fill'; fill.style.background = colors[i % colors.length]; fill.style.width = (a.v / max * 100).toFixed(1) + '%';
+      var val = document.createElement('span'); val.className = 'bar-val'; val.textContent = a.v;
+      track.appendChild(fill);
+      row.appendChild(lab); row.appendChild(track); row.appendChild(val);
+      box.appendChild(row);
+    });
+  }
+
+  function renderTypeBars(rows) {
+    var colors = ['#2563eb', '#0ea5e9', '#8b5cf6', '#f59e0b', '#10b981'];
+    var box = $('typeBars'); box.innerHTML = '';
+    var max = 1;
+    var counts = TYPES.map(function (t) { return { name: t, v: 0 }; });
+    rows.forEach(function (r) {
+      var arr = r['知识类型'] || [];
+      counts.forEach(function (c) { if (arr.indexOf(c.name) >= 0) c.v++; });
+    });
+    counts.forEach(function (c) { if (c.v > max) max = c.v; });
+    counts.forEach(function (c, i) {
+      var row = document.createElement('div'); row.className = 'bar-row';
+      var lab = document.createElement('span'); lab.className = 'bar-label'; lab.textContent = c.name;
+      var track = document.createElement('span'); track.className = 'bar-track';
+      var fill = document.createElement('span'); fill.className = 'bar-fill'; fill.style.background = colors[i % colors.length]; fill.style.width = (c.v / max * 100).toFixed(1) + '%';
+      var val = document.createElement('span'); val.className = 'bar-val'; val.textContent = c.v;
+      track.appendChild(fill);
+      row.appendChild(lab); row.appendChild(track); row.appendChild(val);
+      box.appendChild(row);
+    });
+  }
+
+  function renderBackupTip() {
+    var n = STATE.rows.length;
+    if (n >= 30) { $('backupCount').textContent = n; $('backupTip').classList.remove('hidden'); }
+    else { $('backupTip').classList.add('hidden'); }
+  }
+
+  /* ---------- 同步状态 ---------- */
+  function setSync(ok, count) {
+    var dot = $('syncDot'), txt = $('syncText');
+    dot.className = 'sync-dot' + (ok === true ? ' ok' : (ok === false ? ' off' : ''));
+    txt.textContent = ok === true ? ('云端 ' + count + ' 条') : (ok === false ? '缓存模式' : '加载中');
+  }
+
+  /* ---------- 复习动作（写本地覆盖） ---------- */
+  function completeReview(r) {
+    var n = r['复习次数'] || 0;
+    var newN = n + 1;
+    var interval = INTERVALS[Math.min(n, INTERVALS.length - 1)];
+    var nextDate = addDays(todayStr(), interval);
+    var lv = r['掌握度'] || '待学习';
+    var newLevel = lv;
+    if (newN >= 3) { newLevel = '已掌握'; }
+    else if (newN >= 1 && lv === '待学习') { newLevel = '学习中'; }
+    r['复习次数'] = newN; r['上次复习'] = todayStr(); r['下次复习'] = nextDate; r['掌握度'] = newLevel;
+    persistRow(r);
+    renderAll();
+    toast('复习完成！下次复习：' + fmtDate(nextDate) + '（间隔 ' + interval + ' 天）');
+  }
+
+  /* 把当前行状态写入本地 */
+  function persistRow(r) {
+    if (r._base) {
+      var prog = getProgress();
+      prog[r._id] = {
+        '复习次数': r['复习次数'] || 0,
+        '上次复习': r['上次复习'] || '',
+        '下次复习': r['下次复习'] || '',
+        '掌握度': r['掌握度'] || '待学习'
+      };
+      lsSet(LS_PROGRESS, prog);
+    } else {
+      var custom = getCustom();
+      for (var i = 0; i < custom.length; i++) {
+        if (custom[i].id === r._id) {
+          custom[i] = rowToCard(r);
+          lsSet(LS_CUSTOM, custom);
+          return;
+        }
+      }
+    }
+  }
+
+  function rowToCard(r) {
+    return {
+      id: r._id, name: r['名称'], stack: r['技术栈'], types: r['知识类型'] || [],
+      level: r['掌握度'] || '待学习', content: r['详细内容'] || '',
+      reviewCount: r['复习次数'] || 0, lastReview: r['上次复习'] || '', nextReview: r['下次复习'] || ''
+    };
+  }
+
+  /* ---------- 表单 ---------- */
+  function openForm(row) {
+    STATE.editingId = row ? row._id : '';
+    $('formTitle').textContent = row ? '编辑知识卡片' : '新增知识卡片';
+    var nameEl = $('formMask').querySelector('[name="名称"]');
+    var stackSel = $('formMask').querySelector('[name="技术栈"]');
+    var levelSel = $('formMask').querySelector('[name="掌握度"]');
+    var dateEl = $('formMask').querySelector('[name="下次复习"]');
+    var contentEl = $('formMask').querySelector('[name="详细内容"]');
+    if (row) {
+      nameEl.value = row['名称'] || '';
+      stackSel.value = row['技术栈'] || '';
+      levelSel.value = row['掌握度'] || '';
+      dateEl.value = row['下次复习'] ? String(row['下次复习']).slice(0, 10) : '';
+      contentEl.value = row['详细内容'] || '';
+      var arr = row['知识类型'] || [];
+      var cbs = $('typeGroup').querySelectorAll('input');
+      for (var i = 0; i < cbs.length; i++) { cbs[i].checked = arr.indexOf(cbs[i].value) >= 0; }
+      refreshTypeGroup();
+    } else {
+      nameEl.value = ''; contentEl.value = ''; levelSel.value = '';
+      stackSel.value = '';
+      dateEl.value = addDays(todayStr(), 1);
+      var cbs2 = $('typeGroup').querySelectorAll('input');
+      for (var j = 0; j < cbs2.length; j++) { cbs2[j].checked = false; }
+      refreshTypeGroup();
+    }
+    $('formMask').classList.remove('hidden');
+  }
+  function closeForm() { $('formMask').classList.add('hidden'); STATE.editingId = ''; }
+  function refreshTypeGroup() {
+    var cbs = $('typeGroup').querySelectorAll('.chk-item');
+    for (var i = 0; i < cbs.length; i++) {
+      var cb = cbs[i].querySelector('input');
+      cbs[i].classList.toggle('on', cb.checked);
+    }
+  }
+
+  function submitForm() {
+    var nameEl = $('formMask').querySelector('[name="名称"]');
+    var stackSel = $('formMask').querySelector('[name="技术栈"]');
+    var levelSel = $('formMask').querySelector('[name="掌握度"]');
+    var dateEl = $('formMask').querySelector('[name="下次复习"]');
+    var contentEl = $('formMask').querySelector('[name="详细内容"]');
+    var name = nameEl.value.trim();
+    if (!name) { toast('请填写知识点名称'); return; }
+    if (!stackSel.value) { toast('请选择技术栈'); return; }
+    var checked = [];
+    var cbs = $('typeGroup').querySelectorAll('input:checked');
+    for (var i = 0; i < cbs.length; i++) { checked.push(cbs[i].value); }
+    if (!checked.length) { toast('请至少选择一个知识类型'); return; }
+    var nextDate = dateEl.value || addDays(todayStr(), 1);
+
+    if (STATE.editingId) {
+      var target = null;
+      STATE.rows.forEach(function (r) { if (r._id === STATE.editingId) target = r; });
+      if (target) {
+        target['名称'] = name; target['技术栈'] = stackSel.value; target['知识类型'] = checked;
+        target['掌握度'] = levelSel.value || '待学习'; target['详细内容'] = contentEl.value.trim();
+        target['下次复习'] = nextDate;
+        if (target._base) {
+          var prog = getProgress();
+          prog[target._id] = {
+            '名称': name, '技术栈': stackSel.value, '知识类型': checked,
+            '掌握度': levelSel.value || '待学习', '详细内容': contentEl.value.trim(),
+            '复习次数': target['复习次数'] || 0, '上次复习': target['上次复习'] || '', '下次复习': nextDate
+          };
+          lsSet(LS_PROGRESS, prog);
+        } else {
+          persistRow(target);
+        }
+        renderAll(); closeForm(); toast('已更新（本机保存）');
+        return;
+      }
+    }
+    var card = {
+      id: 'local_' + Date.now(), name: name, stack: stackSel.value, types: checked,
+      level: levelSel.value || '待学习', content: contentEl.value.trim(),
+      reviewCount: 0, lastReview: '', nextReview: nextDate
+    };
+    var custom = getCustom(); custom.unshift(card); lsSet(LS_CUSTOM, custom);
+    STATE.rows = buildRows(lsGet(LS_DATA_CACHE, []));
+    renderAll(); closeForm(); toast('已新增（本机保存）');
+  }
+
+  /* ---------- 详情 ---------- */
+  var DETAIL_ROW = null;
+  function openDetail(r) {
+    DETAIL_ROW = r;
+    var stack = r['技术栈'];
+    var types = r['知识类型'] || [];
+    var lv = r['掌握度'] || '待学习';
+    var meta = '';
+    if (stack) meta += '<span class="k-stack">' + esc(stack) + '</span>';
+    for (var i = 0; i < types.length; i++) { meta += '<span class="k-type" style="background:var(--primary-soft);color:var(--primary)">' + esc(types[i]) + '</span>'; }
+    meta += '<span class="k-level ' + levelClass(lv) + '">' + esc(lv) + '</span>';
+    $('detailMeta').innerHTML = meta;
+    $('detailTitle').textContent = r['名称'] || '未命名';
+    var contentEl = $('detailContent');
+    contentEl.innerHTML = renderMarkdown(r['详细内容']) || '<p style="color:var(--text3)">（暂无详细内容，点击编辑补充）</p>';
+    var foot = '';
+    var du = daysUntil(r['下次复习']);
+    foot += '<div style="width:100%;font-size:12px;color:var(--text2);margin-bottom:6px">已复习 ' + (r['复习次数'] || 0) + ' 次 · 上次复习 ' + (r['上次复习'] ? fmtDate(r['上次复习']) : '从未') + ' · 下次 ' + (du < 0 ? '<b style="color:var(--red)">逾期 ' + (-du) + ' 天</b>' : fmtDate(r['下次复习'])) + '</div>';
+    foot += '<button class="btn-done" onclick="window.__bdComplete && window.__bdComplete()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>完成复习</button>';
+    foot += '<button class="btn-ghost" onclick="window.__bdEdit && window.__bdEdit()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>编辑</button>';
+    foot += '<button class="btn-ghost" style="color:var(--red);border-color:#fecaca" onclick="window.__bdDel && window.__bdDel()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>删除</button>';
+    $('detailActions').innerHTML = foot;
+    window.__bdComplete = function () { completeReview(r); renderDetailFresh(); };
+    window.__bdEdit = function () { closeDetail(); openForm(r); };
+    window.__bdDel = function () { closeDetail(); confirmDialog('删除知识卡片', '确定删除「' + (r['名称'] || '') + '」吗？（云端卡片仅在本机隐藏，不影响仓库数据）', function () { deleteRecord(r); }); };
+    $('detailMask').classList.remove('hidden');
+  }
+  function renderDetailFresh() { if (DETAIL_ROW) openDetail(DETAIL_ROW); }
+  function closeDetail() { $('detailMask').classList.add('hidden'); DETAIL_ROW = null; }
+
+  function deleteRecord(r) {
+    if (r._base) {
+      var deleted = getDeleted(); deleted.push(r._id); lsSet(LS_DELETED, deleted);
+    } else {
+      var custom = getCustom().filter(function (c) { return c.id !== r._id; });
+      lsSet(LS_CUSTOM, custom);
+    }
+    STATE.rows = buildRows(lsGet(LS_DATA_CACHE, []));
+    renderAll(); toast('已删除（本机生效）');
+  }
+
+  /* ---------- 确认弹窗 ---------- */
+  function confirmDialog(title, text, cb) {
+    $('confirmTitle').textContent = title;
+    $('confirmText').textContent = text;
+    CONFIRM_CB = cb;
+    $('confirmMask').classList.remove('hidden');
+  }
+  function closeConfirm() { $('confirmMask').classList.add('hidden'); CONFIRM_CB = null; }
+  function confirmAction() { var cb = CONFIRM_CB; closeConfirm(); if (cb) cb(); }
+
+  function openClearModal() {
+    confirmDialog('清空本地进度',
+      '将清空本机的复习进度、新增卡片与隐藏记录（云端 data.json 不受影响），且不可恢复。建议先「导出备份」。确定继续吗？',
+      function () {
+        lsDel(LS_PROGRESS); lsDel(LS_CUSTOM); lsDel(LS_DELETED);
+        STATE.rows = buildRows(lsGet(LS_DATA_CACHE, []));
+        renderAll(); toast('已清空本地进度');
+      });
+  }
+
+  /* ---------- 导出 / 导入 ---------- */
+  function exportJSON() {
+    var payload = { app: '大数据知识巩固台', exportedAt: new Date().toISOString(), count: STATE.rows.length, rows: STATE.rows.map(function (r) { return rowToCard(r); }) };
+    var blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = '大数据知识巩固台备份_' + todayStr() + '.json';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast('已导出 ' + STATE.rows.length + ' 条备份');
+  }
+
+  function importJSON(input) {
+    var file = input.files && input.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function () {
+      try {
+        var data = JSON.parse(reader.result);
+        var rows = data.rows || data.results || [];
+        if (!rows.length) { toast('备份文件中没有数据'); input.value = ''; return; }
+        confirmDialog('导入恢复', '将导入 ' + rows.length + ' 条知识卡片为本机卡片（不影响云端仓库）。确定继续吗？', function () {
+          var custom = getCustom();
+          var existNames = {};
+          STATE.rows.forEach(function (r) { existNames[r['名称']] = 1; });
+          var ok = 0;
+          rows.forEach(function (c, idx) {
+            var name = c['名称'] || c.name;
+            if (!name || existNames[name]) return;
+            custom.unshift({
+              id: c.id || c._id || ('imp_' + Date.now() + '_' + idx),
+              name: name, stack: c['技术栈'] || c.stack || '其他',
+              types: c['知识类型'] || c.types || [],
+              level: c['掌握度'] || c.level || '待学习',
+              content: c['详细内容'] || c.content || '',
+              reviewCount: c['复习次数'] || c.reviewCount || 0,
+              lastReview: c['上次复习'] || c.lastReview || '',
+              nextReview: c['下次复习'] || c.nextReview || addDays(todayStr(), 1)
+            });
+            ok++;
+          });
+          lsSet(LS_CUSTOM, custom);
+          STATE.rows = buildRows(lsGet(LS_DATA_CACHE, []));
+          renderAll();
+          toast('导入完成：' + ok + ' 条（本机保存）');
+          input.value = '';
+        });
+      } catch (e) { toast('备份文件解析失败'); input.value = ''; }
+    };
+    reader.readAsText(file, 'utf-8');
+  }
+
+  /* ---------- Tab ---------- */
+  function switchTab(name, skipScroll) {
+    STATE.tab = name;
+    var tabs = document.querySelectorAll('.tab');
+    for (var i = 0; i < tabs.length; i++) { tabs[i].classList.toggle('on', tabs[i].getAttribute('data-tab') === name); }
+    var bn = document.querySelectorAll('.bn-item');
+    for (var j = 0; j < bn.length; j++) { bn[j].classList.toggle('on', bn[j].getAttribute('data-tab') === name); }
+    var map = { library: 'tab-library', interview: 'tab-interview', stats: 'tab-stats' };
+    var ids = ['tab-library', 'tab-interview', 'tab-stats'];
+    for (var k = 0; k < ids.length; k++) { $(ids[k]).classList.toggle('hidden', ids[k] !== map[name]); }
+    if (!skipScroll) { window.scrollTo(0, 0); }
+  }
+
+  /* ---------- Markdown-lite ---------- */
+  function renderMarkdown(text) {
+    if (!text) return '';
+    var out = '';
+    var blocks = String(text).split(/```/);
+    for (var b = 0; b < blocks.length; b++) {
+      if (b % 2 === 1) {
+        out += '<pre><code>' + esc(blocks[b].replace(/^\n/, '').replace(/\n$/, '')) + '</code></pre>';
+      } else {
+        out += renderInlineBlocks(blocks[b]);
+      }
+    }
+    return out;
+  }
+  function renderInlineBlocks(block) {
+    var lines = block.split(/\n/);
+    var out = '';
+    var inList = false;
+    for (var i = 0; i < lines.length; i++) {
+      var ln = lines[i];
+      var t = ln.trim();
+      if (!t) { if (inList) { out += '</ul>'; inList = false; } continue; }
+      var h3 = t.match(/^#{3}\s+(.*)/);
+      var h2 = t.match(/^#{2}\s+(.*)/);
+      var li = t.match(/^[-*]\s+(.*)/);
+      if (h3) { if (inList) { out += '</ul>'; inList = false; } out += '<h4>' + inline(esc(h3[1])) + '</h4>'; }
+      else if (h2) { if (inList) { out += '</ul>'; inList = false; } out += '<h3>' + inline(esc(h2[1])) + '</h3>'; }
+      else if (li) {
+        if (!inList) { out += '<ul>'; inList = true; }
+        out += '<li>' + inline(esc(li[1])) + '</li>';
+      } else {
+        if (inList) { out += '</ul>'; inList = false; }
+        out += '<p>' + inline(esc(t)) + '</p>';
+      }
+    }
+    if (inList) out += '</ul>';
+    return out;
+  }
+  function inline(s) {
+    return s.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  }
+
+  /* ---------- 启动 ---------- */
+  window.addEventListener('DOMContentLoaded', init);
+})();
+</script>
+</body>
+</html>
